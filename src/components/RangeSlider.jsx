@@ -1,14 +1,11 @@
 import PropTypes from 'prop-types'
 
 function RangeSlider({
-    // min,
-    // max,
     width,
     currentMinValue,
     onMinChange,
     currentMaxValue,
     onMaxChange,
-    isDragging,
     elementDragging,
     onMouseDown,
     onTouchStart,
@@ -50,7 +47,7 @@ function RangeSlider({
               className="range-slider__handle min"
               onMouseDown={onMouseDown}
               style={{ 
-                cursor: isDragging ? 'grabbing' : 'grab'
+                cursor: elementDragging.current === minBulletRef.current ? 'grabbing' : 'grab'
               }}
             />
             <span
@@ -58,7 +55,7 @@ function RangeSlider({
               className="range-slider__handle max"
               onMouseDown={onMouseDown}
               style={{ 
-                cursor: isDragging ? 'grabbing' : 'grab'
+                cursor: elementDragging.current === maxBulletRef.currentgging ? 'grabbing' : 'grab'
               }}
             />
           </div>
@@ -78,14 +75,11 @@ function RangeSlider({
 export default RangeSlider;
 
 RangeSlider.propTypes = {
-    // min: PropTypes.number.isRequired,
-    // max: PropTypes.number.isRequired,
     width: PropTypes.number,
     currentMinValue: PropTypes.number.isRequired,
     onMinChange: PropTypes.func.isRequired,
     onMaxChange: PropTypes.func.isRequired,
     currentMaxValue: PropTypes.number.isRequired,
-    isDragging: PropTypes.bool.isRequired,
     elementDragging: PropTypes.object.isRequired,
     onMouseDown: PropTypes.func.isRequired,
     // onTouchStart: PropTypes.func.isRequired,

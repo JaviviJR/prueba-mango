@@ -11,8 +11,13 @@ $slider-handle-size: 20px;
   // margin: 20px 0;
 
   &__input-div {
+    display: flex;
+    flex-direction: row;  
+    align-items: center;
+    flex-wrap: nowrap;
     width: 50px;
-    display: inline-flex;
+    min-width: 50px;
+    // display: inline-flex;
     margin: 0px 20px;
   }
 
