@@ -36,23 +36,34 @@ function Range({
     // const [maxBulletMaxState, setMaxBulletMaxState] = useState(null);
     /* END DEBUG */
 
-    const onMinChange = useCallback((value) => {
+    const calculateBulletPosition = useCallback((bulletRef, value) => {
+        const position = ((value - min) / (max - min)) * sliderWith;
+        bulletRef.current.style.left = `${position + (-1 * 20 / 2)}px`;
+    }, [min, max, sliderWith]);
+    
+    const onMinChange = (value) => {
         const bulletMin = min;
         const bulletMax = currentMaxValue;
 
         value = Math.max(bulletMin, value);
         value = Math.min(bulletMax, value);
-        setCurrentMinValue(value);
-    }, [currentMaxValue, min]);
 
-    const onMaxChange = useCallback((value) => {
+        if (!minBulletRef.current) return;
+        calculateBulletPosition(minBulletRef, value);
+        setCurrentMinValue(value);
+    };
+
+    const onMaxChange = (value) => {
         const bulletMin = currentMinValue;
         const bulletMax = max;
 
         value = Math.max(bulletMin, value);
-        value = Math.min(bulletMax, value);
+        value = Math.min(bulletMax, value);        
+        
+        if (!maxBulletRef.current) return;
+        calculateBulletPosition(maxBulletRef, value);
         setCurrentMaxValue(value);
-    }, [currentMinValue, max]);
+    };
 
     const moveBulletPosition = useCallback((e, setMethod) => {
         const posX = (e.clientX) - sliderLeft;
@@ -61,23 +72,6 @@ function Range({
     },
     [max, min, sliderWith, sliderLeft]);
     
-    const calculateBulletPosition = useCallback((bulletRef, value) => {
-        const position = ((value - min) / (max - min)) * sliderWith;
-        bulletRef.current.style.left = `${position + (-1 * 20 / 2)}px`;
-    }, [min, max, sliderWith]);
-
-    useEffect(() => {
-        if (!minBulletRef.current) return;
-        calculateBulletPosition(minBulletRef, currentMinValue);
-    }, [currentMinValue, calculateBulletPosition]);
-
-
-    useEffect(() => {
-        if (!maxBulletRef.current) return;
-        calculateBulletPosition(maxBulletRef, currentMaxValue);
-    }, [currentMaxValue, calculateBulletPosition]);
-
-
     const redrawBullets = useCallback(() => {
         const sliderBoundingClientRect = sliderRef.current?.getBoundingClientRect();
         if (!sliderBoundingClientRect) return;
@@ -100,7 +94,7 @@ function Range({
         redrawBullets();
     }, [sliderWith, redrawBullets]);
 
-    const getBulletStateByElement = useCallback((element) => {
+    const getBulletStateByElement = (element) => {
         switch (element) {
             case minBulletRef.current:
                 return {
@@ -117,7 +111,7 @@ function Range({
             default:
                 return null;
         }
-    }, [currentMaxValue, currentMinValue, onMaxChange, onMinChange]);
+    };
 
     const onMouseUp = useCallback(() => {
 		onChange({
@@ -135,19 +129,17 @@ function Range({
                 moveBulletPosition(e, setMethod);
 			}
 		},
-		[isDragging, moveBulletPosition, getBulletStateByElement]
+		[isDragging, moveBulletPosition]
 	);
 
     const onMouseDown = (event) => {
         if (isDragging) return;
 
-        const { bulletRef, setMethod } = getBulletStateByElement(event.target);
-        
+        const { bulletRef } = getBulletStateByElement(event.target);        
         if (!bulletRef.current) return;
 
 		setIsDragging(true);
         elementDragging.current = bulletRef.current;
-		moveBulletPosition(event, setMethod);
 	};
 
     useEffect(() => {
