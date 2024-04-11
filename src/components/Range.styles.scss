@@ -32,6 +32,7 @@ $slider-handle-size: 20px;
   height: $slider-height;
   background-color: $slider-bg;
   border-radius: $slider-height;
+  width: 100%;
   cursor: pointer;
   
   &__bar {
@@ -54,6 +55,12 @@ $slider-handle-size: 20px;
     border-radius: 50%;
     border: 2px solid #ddd;
     box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
+
+    &:hover {
+      width: calc(#{$slider-handle-size} * 1.2);
+      height: calc(#{$slider-handle-size} * 1.2);
+      // cursor: grab;
+    }
   }
 
 }
