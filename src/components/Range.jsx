@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import './Range.styles.scss';
 import RangeSlider from './RangeSlider';
 
@@ -12,104 +12,107 @@ function Range({
 	// step = 5,
 }) {
     const sliderRef = useRef(null);
-    const minHandleRef = useRef(null);
-    const maxHandleRef = useRef(null);
-
+    const [sliderWith, setSliderWidth] = useState(null);
+    
+    const minBulletRef = useRef(null);
     const [currentMinValue, setCurrentMinValue] = useState(min);
+    
+    const maxBulletRef = useRef(null);
     const [currentMaxValue, setCurrentMaxValue] = useState(max);
+    
     const [isDragging, setIsDragging] = useState(false);
     const elementDragging = useRef(null);
 
 
     /* DEBUG */
-    const [eClientX, setEClientX] = useState(null);
-    const [leftHandler, setLeftHandler] = useState(null);
-    const [leftSlider, setLeftSlider] = useState(null);
     const [posX, setPosX] = useState(null);
     const [totalWidth, setTotalWidth] = useState(null);
     const [selectedValue, setSelectedValue] = useState(null);
     const [position, setPosition] = useState(null);
 
-    const [minHandlerMinState, setMinHandlerMinState] = useState(null);
-    const [minHandlerMaxState, setMinHandlerMaxState] = useState(null);
-    const [maxHandlerMinState, setMaxHandlerMinState] = useState(null);
-    const [maxHandlerMaxState, setMaxHandlerMaxState] = useState(null);
+    const [minBulletMinState, setMinBulletMinState] = useState(null);
+    const [minBulletMaxState, setMinBulletMaxState] = useState(null);
+    const [maxBulletMinState, setMaxBulletMinState] = useState(null);
+    const [maxBulletMaxState, setMaxBulletMaxState] = useState(null);
+    /* END DEBUG */
 
-    const moveSliderPosition = useCallback((e, handler, setMethod) => {
+    const moveSliderPosition = useCallback((e, bullet, setMethod) => {
         const sliderBoundingClientRect = sliderRef.current?.getBoundingClientRect();
         
         if (sliderBoundingClientRect) {
             const posX = (e.clientX) - sliderBoundingClientRect.left;
-            setEClientX(e.clientX);
-            setLeftHandler(handler.left);
-            setLeftSlider(sliderBoundingClientRect.left);
             setPosX(posX);
 
             const totalWidth = sliderBoundingClientRect.width;
-            // setTotalWidth(totalWidth);
+            setSliderWidth(totalWidth);
+            setTotalWidth(totalWidth);
             
-            const {handlerMin, handlerMax} = getMinMaxValue(handler);
-            // console.log('handlerMin', handlerMin, 'handlerMax', handlerMax);
-            // setHandlerMinState(handlerMin);
-            // setHandlerMaxState(handlerMax);
+            const {bulletMin, bulletMax} = getMinMaxValue(bullet);
             
             let selectedValue = Math.round((posX / totalWidth) * (max - min) + min);
-            selectedValue = Math.max(handlerMin, selectedValue);
-            selectedValue = Math.min(handlerMax, selectedValue);
-
+            selectedValue = Math.max(bulletMin, selectedValue);
+            selectedValue = Math.min(bulletMax, selectedValue);
             setSelectedValue(selectedValue);
             setMethod(selectedValue);
-
-            // calculateHandlerPosition(handler, selectedValue);
-
-            // const position = ((selectedValue - min) / (max - min)) * totalWidth;
-            // setPosition(position);
-            // handler.current.style.left = `${position + (-1 * 20 / 2)}px`;
-            // handler.current.style.left = `${position}px`;
         }
     },
     [max, min, currentMinValue, currentMaxValue]);
 
     useEffect(() => {
-        if (!minHandleRef.current) return;
+        if (!minBulletRef.current) return;
 
-        // const { handlerMin, handlerMax } = getMinMaxValue(minHandleRef);
-        // setMinHandlerMinState(handlerMin);
-        // setMinHandlerMaxState(handlerMax);
+        const {bulletMin, bulletMax} = getMinMaxValue(minBulletRef);
+        setMinBulletMinState(bulletMin);
+        setMinBulletMaxState(bulletMax);
 
-        calculateHandlerPosition(minHandleRef, currentMinValue);
+        calculateBulletPosition(minBulletRef, currentMinValue);
     }, [currentMinValue]);
 
     useEffect(() => {
-        if (!maxHandleRef.current) return;
+        if (!maxBulletRef.current) return;
 
-        // const { handlerMin, handlerMax } = getMinMaxValue(maxHandleRef);
-        // setMaxHandlerMinState(handlerMin);
-        // setMaxHandlerMaxState(handlerMax);
+        const { bulletMin, bulletMax } = getMinMaxValue(maxBulletRef);
+        setMaxBulletMinState(bulletMin);
+        setMaxBulletMaxState(bulletMax);
 
-        calculateHandlerPosition(maxHandleRef, currentMaxValue);
+        calculateBulletPosition(maxBulletRef, currentMaxValue);
     }, [currentMaxValue]);
 
-    const calculateHandlerPosition = (handlerRef, value) => {
+    const calculateBulletPosition = useCallback((bulletRef, value) => {
         const sliderBoundingClientRect = sliderRef.current?.getBoundingClientRect();
         const totalWidth = sliderBoundingClientRect.width;        
         const position = ((value - min) / (max - min)) * totalWidth;
         setPosition(position);
-        handlerRef.current.style.left = `${position + (-1 * 20 / 2)}px`;
-        // handlerRef.current.style.left = `${position}px`;
-    };
+        bulletRef.current.style.left = `${position + (-1 * 20 / 2)}px`;
+    }, [min, max]);
 
-    const getMinMaxValue = (handler) => {
-        switch (handler) {
-            case minHandleRef:
+    const redrawBullets = useCallback(() => {
+        calculateBulletPosition(minBulletRef, currentMinValue);
+        calculateBulletPosition(maxBulletRef, currentMaxValue);
+    }, [calculateBulletPosition, currentMinValue, currentMaxValue]);
+
+    useLayoutEffect(() => {
+        window.addEventListener("resize", redrawBullets);
+        return () => {
+			window.removeEventListener("resize", redrawBullets);
+		};
+    }, []);
+
+    useEffect(() => {
+        redrawBullets();
+    }, [sliderWith,redrawBullets]);
+
+    const getMinMaxValue = (bullet) => {
+        switch (bullet) {
+            case minBulletRef:
                 return {
-                    handlerMin: min,
-                    handlerMax: currentMaxValue
+                    bulletMin: min,
+                    bulletMax: currentMaxValue
                 };
-            case maxHandleRef:
+            case maxBulletRef:
                 return {
-                    handlerMin: currentMinValue,
-                    handlerMax: max
+                    bulletMin: currentMinValue,
+                    bulletMax: max
                 };
             default:
                 console.log('default');
@@ -117,17 +120,17 @@ function Range({
         }
     }
 
-    const getHandlerStateByElement = (element) => {
+    const getBulletStateByElement = (element) => {
         switch (element) {
-            case minHandleRef.current:
+            case minBulletRef.current:
                 return {
-                    handlerRef: minHandleRef,
+                    bulletRef: minBulletRef,
                     value: currentMinValue,
                     setMethod: setCurrentMinValue
                 };
-            case maxHandleRef.current:
+            case maxBulletRef.current:
                 return {
-                    handlerRef: maxHandleRef,
+                    bulletRef: maxBulletRef,
                     value: currentMaxValue,
                     setMethod: setCurrentMaxValue
                 };
@@ -147,9 +150,9 @@ function Range({
 
 	const onMouseMove = useCallback(
 		(e) => {
-            const { handlerRef, setMethod } = getHandlerStateByElement(elementDragging.current);
+            const { bulletRef, setMethod } = getBulletStateByElement(elementDragging.current);
             if (isDragging) {
-                moveSliderPosition(e, handlerRef, setMethod);
+                moveSliderPosition(e, bulletRef, setMethod);
 			}
 		},
 		[isDragging, moveSliderPosition]
@@ -158,15 +161,13 @@ function Range({
     const onMouseDown = (event) => {
         if (isDragging) return;
 
-        const { handlerRef, setMethod } = getHandlerStateByElement(event.target);
+        const { bulletRef, setMethod } = getBulletStateByElement(event.target);
         
-        if (!handlerRef.current) return;
-
-        console.log('onMouseDown - handlerRef', handlerRef);
+        if (!bulletRef.current) return;
 
 		setIsDragging(true);
-        elementDragging.current = handlerRef.current;
-		moveSliderPosition(event, handlerRef, setMethod);
+        elementDragging.current = bulletRef.current;
+		moveSliderPosition(event, bulletRef, setMethod);
 	};
 
     useEffect(() => {
@@ -188,27 +189,29 @@ function Range({
                 max={max}
                 width={width}
                 currentMinValue={currentMinValue}
+                setCurrentMinValue={setCurrentMinValue}
                 currentMaxValue={currentMaxValue}
                 isDragging={isDragging}
                 onMouseDown={onMouseDown}
                 // onTouchStart={onTouchStart}
-                onTouchStart={() => {}}
+                // onTouchStart={() => {}}
                 // onKeyDown={onKeyDown}
-                onKeyDown={() => {}}
+                // onKeyDown={() => {}}
                 sliderRef={sliderRef}
-                minHandleRef={minHandleRef}
-                maxHandleRef={maxHandleRef}
+                minBulletRef={minBulletRef}
+                maxBulletRef={maxBulletRef}
             />
             CurrentMin: { currentMinValue }<br />
             CurrentMax: { currentMaxValue }<br />
             posX: { posX }<br />
+            sliderWith: { sliderWith }<br />
             totalWidth: { totalWidth }<br />
             selectedValue: { selectedValue }<br />
             position: { position }<br />
-            minHandlerMin: { minHandlerMinState }<br />
-            minHandlerMax: { minHandlerMaxState }<br />
-            maxHandlerMin: { maxHandlerMinState }<br />
-            maxHandlerMax: { maxHandlerMaxState }<br />
+            minBulletMin: { minBulletMinState }<br />
+            minBulletMax: { minBulletMaxState }<br />
+            maxBulletMin: { maxBulletMinState }<br />
+            maxBulletMax: { maxBulletMaxState }<br />
         </div>
     );
 }

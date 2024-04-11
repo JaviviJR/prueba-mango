@@ -5,18 +5,26 @@ function RangeSlider({
     max,
     width,
     currentMinValue,
+    setCurrentMinValue,
     currentMaxValue,
     isDragging,
     onMouseDown,
     onTouchStart,
     onKeyDown,
     sliderRef,
-    minHandleRef,
-    maxHandleRef
+    minBulletRef,
+    maxBulletRef
   }) {
     return (
       <div className='range-slider-container'>
-        <div className='range-slider-container__label'>{ min }€</div>
+        <div className='range-slider-container__input-div'>
+          <input 
+            type='number'
+            className='range-slider-container__input'
+            value={currentMinValue}
+            onChange={(e) => {setCurrentMinValue(Number(e.target.value))}}
+          />€
+        </div>
         <div
           ref={sliderRef}
           role="slider"
@@ -34,7 +42,7 @@ function RangeSlider({
         >
           <div className="range-slider__bar">
             <span
-              ref={minHandleRef}
+              ref={minBulletRef}
               className="range-slider__handle min"
               onMouseDown={onMouseDown}
               // style={{ 
@@ -42,7 +50,7 @@ function RangeSlider({
               // }}
             />
             <span
-              ref={maxHandleRef}
+              ref={maxBulletRef}
               className="range-slider__handle max"
               onMouseDown={onMouseDown}
               // style={{ 
@@ -51,7 +59,7 @@ function RangeSlider({
             />
           </div>
         </div>
-        <div className='range-slider-container__label'>{ max }€</div>
+        <div className='range-slider-container__label'>{ currentMaxValue }€</div>
       </div>
     );
 }
@@ -66,9 +74,9 @@ RangeSlider.propTypes = {
     currentMaxValue: PropTypes.number.isRequired,
     isDragging: PropTypes.bool.isRequired,
     onMouseDown: PropTypes.func.isRequired,
-    onTouchStart: PropTypes.func.isRequired,
-    onKeyDown: PropTypes.func.isRequired,
+    // onTouchStart: PropTypes.func.isRequired,
+    // onKeyDown: PropTypes.func.isRequired,
     sliderRef: PropTypes.object.isRequired,
-    minHandleRef: PropTypes.object.isRequired,
-    maxHandleRef: PropTypes.object.isRequired,
+    minBulletRef: PropTypes.object.isRequired,
+    maxBulletRef: PropTypes.object.isRequired,
 }

@@ -10,14 +10,25 @@ $slider-handle-size: 20px;
   flex-wrap: nowrap;
   // margin: 20px 0;
 
-  &__label {
-    padding: 0px 15px;
+  &__input-div {
+    width: 50px;
+    display: inline-flex;
+    margin: 0px 20px;
+  }
+
+  &__input {
+    width: 100%;
+    border: none;
+    appearance: textfield;
+    text-align: right;
+    font-size: 16px;
   }
 
 }
 
 .range-slider {
   position: relative;
+  min-width: 150px;
   height: $slider-height;
   background-color: $slider-bg;
   border-radius: $slider-height;

@@ -14,7 +14,7 @@ function Exercise1() {
             </div>
             <div>
                 <Range 
-                    min={100}
+                    min={10}
                     max={1000}
                     onChange={onChange}
                     // initialValue={45}
