@@ -14,6 +14,10 @@ function RangeSlider({
     minBulletRef,
     maxBulletRef
   }) {
+    
+    const minValueAsString = currentMinValue.toFixed(2);
+    const maxValueAsString = currentMaxValue.toFixed(2);
+
     return (
       <div 
         className='range-slider-container'
@@ -25,7 +29,7 @@ function RangeSlider({
           <input 
             type='number'
             className='range-slider-container__input'
-            value={currentMinValue}
+            value={minValueAsString}
             onChange={(e) => {onMinChange(Number(e.target.value))}}
           />€
         </div>
@@ -64,7 +68,7 @@ function RangeSlider({
           <input 
             type='number'
             className='range-slider-container__input'
-            value={currentMaxValue}
+            value={maxValueAsString}
             onChange={(e) => {onMaxChange(Number(e.target.value))}}
           />€
         </div>

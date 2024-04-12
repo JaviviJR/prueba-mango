@@ -15,8 +15,8 @@ $slider-handle-size: 20px;
     flex-direction: row;  
     align-items: center;
     flex-wrap: nowrap;
-    width: 50px;
-    min-width: 50px;
+    width: 70px;
+    min-width: 70px;
     // display: inline-flex;
     margin: 0px 20px;
   }
@@ -42,7 +42,7 @@ $slider-handle-size: 20px;
   
   &__bar {
     position: absolute;
-    left: 0;
+    left: 0px;
     height: 100%;
     width: 100%;
     background-color: $slider-color;

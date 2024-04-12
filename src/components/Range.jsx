@@ -4,12 +4,15 @@ import './Range.styles.scss';
 import RangeSlider from './RangeSlider';
 
 function Range({
-	min,
-	max,
+    mode,
+    range = [],
+	min = 0,
+	max = 0,
 	onChange,
 	width,
 	// step = 5,
 }) {
+    
     const sliderRef = useRef(null);
     const [sliderWith, setSliderWidth] = useState(null);
     const [sliderLeft, setSliderLeft] = useState(null);
@@ -22,7 +25,21 @@ function Range({
     
     const [isDragging, setIsDragging] = useState(false);
     const elementDragging = useRef(null);
-
+    
+    // useLayoutEffect(() => {
+    //     switch (mode) {
+    //         case 'fixed':
+    //             setCurrentMinValue(Math.min(...range));
+    //             setCurrentMaxValue(Math.min(...range));
+    //             break;
+    //         case 'normal':
+    //             setCurrentMinValue(min);
+    //             setCurrentMaxValue(max);
+    //             break;
+    //         default:
+    //             throw new Error('Invalid mode');
+    //     }
+    // }, [mode, range, min, max]);
 
     /* DEBUG */
     // const [posX, setPosX] = useState(null);
@@ -47,7 +64,7 @@ function Range({
 
         value = Math.max(bulletMin, value);
         value = Math.min(bulletMax, value);
-
+        
         if (!minBulletRef.current) return;
         calculateBulletPosition(minBulletRef, value);
         setCurrentMinValue(value);
@@ -67,7 +84,8 @@ function Range({
 
     const moveBulletPosition = useCallback((e, setMethod) => {
         const posX = (e.clientX) - sliderLeft;
-        let selectedValue = Math.round((posX / sliderWith) * (max - min) + min);
+        // let selectedValue = Math.round((posX / sliderWith) * (max - min) + min);
+        let selectedValue = ((posX / sliderWith) * (max - min) + min).toFixed(2);
         setMethod(selectedValue);
     },
     [max, min, sliderWith, sliderLeft]);
@@ -124,8 +142,8 @@ function Range({
 
 	const onMouseMove = useCallback(
 		(e) => {
-            const { setMethod } = getBulletStateByElement(elementDragging.current);
             if (isDragging) {
+                const { setMethod } = getBulletStateByElement(elementDragging.current);
                 moveBulletPosition(e, setMethod);
 			}
 		},
@@ -190,8 +208,39 @@ function Range({
 export default Range;
 
 Range.propTypes = {
-    min: PropTypes.number.isRequired,
-    max: PropTypes.number.isRequired,
+    mode: PropTypes.oneOf(['fixed', 'normal']),
+    range: function(props) {
+        if (props.mode === 'fixed' && !props.range) {
+            return new Error(
+                'You must provide a range when mode is set to range'
+            );
+        }
+    },
+    min: function(props, propName) {
+        if (props.mode === 'normal' && props[propName] === undefined) {
+            return new Error(
+                'You must provide a min when mode is set to normal'
+            );
+        }
+        if ( props.mode === 'normal' && typeof props.min !== 'number') {
+            return new Error(
+                'min must be a number'
+            );
+
+        }
+    },
+    max: function(props, propName) {
+        if (props.mode === 'normal' && props[propName] === undefined) {
+            return new Error(
+                'You must provide a max when mode is set to normal'
+            );
+        }
+        if ( props.mode === 'normal' && typeof props.max !== 'number') {
+            return new Error(
+                'max must be a number'
+            );
+        }
+    },
     onChange: PropTypes.func.isRequired,
     width: PropTypes.number,
 };
