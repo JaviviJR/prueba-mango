@@ -40,9 +40,7 @@ function RangeSlider({
           // aria-valuemin={min}
           // aria-valuemax={max}
           // aria-valuenow={currentValue}
-          // onMouseDown={onMouseDown}
           // onTouchStart={onTouchStart}
-          // onKeyDown={onKeyDown}
           className="range-slider"
         >
           <div className="range-slider__bar">
@@ -50,6 +48,7 @@ function RangeSlider({
               ref={minBulletRef}
               className="range-slider__handle min"
               onMouseDown={onMouseDown}
+              // onKeyDown={onKeyDown}
               style={{ 
                 cursor: elementDragging.current === minBulletRef.current ? 'grabbing' : 'grab'
               }}
@@ -58,6 +57,7 @@ function RangeSlider({
               ref={maxBulletRef}
               className="range-slider__handle max"
               onMouseDown={onMouseDown}
+              // onKeyDown={onKeyDown}
               style={{ 
                 cursor: elementDragging.current === maxBulletRef.currentgging ? 'grabbing' : 'grab'
               }}

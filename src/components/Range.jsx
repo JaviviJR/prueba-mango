@@ -8,6 +8,7 @@ function Range({
     range = [],
 	min: minProp = 0,
 	max: maxProp = 0,
+    step = 0.10,
 	onChange,
 	width,
 }) {
@@ -31,7 +32,7 @@ function Range({
     const elementDragging = useRef(null);
     
     useLayoutEffect(() => {
-        console.log('useEffect watching props', [mode, range, minProp, maxProp]);
+        // console.log('useEffect watching props', [mode, range, minProp, maxProp]);
         switch (mode) {
             case 'fixed':
                 setMin(Math.min(...range));
@@ -74,6 +75,9 @@ function Range({
     };
 
     const onMinChange = (value) => {
+        console.log('onMinChange', value);
+        console.log('minBulletRef',minBulletRef);
+
         if (mode === 'normal') {
             const bulletMin = min;
             const bulletMax = currentMaxValue;
@@ -83,7 +87,11 @@ function Range({
         } else {
             value = getClosestValue(value);
         }
+
         if (!minBulletRef.current) return;
+
+        console.log('value', value);
+
         calculateBulletPosition(minBulletRef, value);
         setCurrentMinValue(value);
     };
@@ -182,6 +190,22 @@ function Range({
         elementDragging.current = bulletRef.current;
 	};
 
+    const onKeyDown = (event) => {
+        if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+            console.log('element', getBulletStateByElement(event.target));
+            
+            const { value, setMethod } = getBulletStateByElement(event.target);
+            let selectedValue = value;
+            if (event.key === "ArrowLeft") {
+				selectedValue = value - step;
+			} else if (event.key === "ArrowRight") {
+				selectedValue = value + step;
+			}
+            console.log('selectedValue', selectedValue);
+            setMethod(selectedValue);
+        }
+    };
+    
     useEffect(() => {
 		if (isDragging) {
 			window.addEventListener("mousemove", onMouseMove);
@@ -207,7 +231,6 @@ function Range({
                 // onTouchStart={onTouchStart}
                 // onTouchStart={() => {}}
                 // onKeyDown={onKeyDown}
-                // onKeyDown={() => {}}
                 sliderRef={sliderRef}
                 minBulletRef={minBulletRef}
                 maxBulletRef={maxBulletRef}
@@ -264,5 +287,6 @@ Range.propTypes = {
         }
     },
     onChange: PropTypes.func.isRequired,
+    step: PropTypes.number,
     width: PropTypes.number,
 };
