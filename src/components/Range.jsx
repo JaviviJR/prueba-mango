@@ -6,40 +6,49 @@ import RangeSlider from './RangeSlider';
 function Range({
     mode,
     range = [],
-	min = 0,
-	max = 0,
+	min: minProp = 0,
+	max: maxProp = 0,
 	onChange,
 	width,
-	// step = 5,
 }) {
-    
+    // const rangedValues = useMemo(() => [...range], [range]);
+    const [min, setMin] = useState(minProp);
+    const [max, setMax] = useState(maxProp);
+    // const [range, setRange] = useState(rangeProp);
+    // const [mode, setMode] = useState(modeProp);
+
     const sliderRef = useRef(null);
     const [sliderWith, setSliderWidth] = useState(null);
     const [sliderLeft, setSliderLeft] = useState(null);
     
     const minBulletRef = useRef(null);
-    const [currentMinValue, setCurrentMinValue] = useState(min);
+    const [currentMinValue, setCurrentMinValue] = useState(0);
     
     const maxBulletRef = useRef(null);
-    const [currentMaxValue, setCurrentMaxValue] = useState(max);
+    const [currentMaxValue, setCurrentMaxValue] = useState(0);
     
     const [isDragging, setIsDragging] = useState(false);
     const elementDragging = useRef(null);
     
-    // useLayoutEffect(() => {
-    //     switch (mode) {
-    //         case 'fixed':
-    //             setCurrentMinValue(Math.min(...range));
-    //             setCurrentMaxValue(Math.min(...range));
-    //             break;
-    //         case 'normal':
-    //             setCurrentMinValue(min);
-    //             setCurrentMaxValue(max);
-    //             break;
-    //         default:
-    //             throw new Error('Invalid mode');
-    //     }
-    // }, [mode, range, min, max]);
+    useLayoutEffect(() => {
+        console.log('useEffect watching props', [mode, range, minProp, maxProp]);
+        switch (mode) {
+            case 'fixed':
+                setMin(Math.min(...range));
+                setMax(Math.max(...range));
+                setCurrentMinValue(Math.min(...range));
+                setCurrentMaxValue(Math.max(...range));
+                break;
+            case 'normal':
+                setMin(min);
+                setMax(max);
+                setCurrentMinValue(min);
+                setCurrentMaxValue(max);
+                break;
+            default:
+                throw new Error('Invalid mode');
+        }
+    }, [mode, range, minProp, maxProp]);
 
     /* DEBUG */
     // const [posX, setPosX] = useState(null);
@@ -58,24 +67,37 @@ function Range({
         bulletRef.current.style.left = `${position + (-1 * 20 / 2)}px`;
     }, [min, max, sliderWith]);
     
-    const onMinChange = (value) => {
-        const bulletMin = min;
-        const bulletMax = currentMaxValue;
+    const getClosestValue = (value) => {
+        return range.reduce((prev, curr) => {
+            return (Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev);
+        });
+    };
 
-        value = Math.max(bulletMin, value);
-        value = Math.min(bulletMax, value);
-        
+    const onMinChange = (value) => {
+        if (mode === 'normal') {
+            const bulletMin = min;
+            const bulletMax = currentMaxValue;
+
+            value = Math.max(bulletMin, value);
+            value = Math.min(bulletMax, value);
+        } else {
+            value = getClosestValue(value);
+        }
         if (!minBulletRef.current) return;
         calculateBulletPosition(minBulletRef, value);
         setCurrentMinValue(value);
     };
 
     const onMaxChange = (value) => {
-        const bulletMin = currentMinValue;
-        const bulletMax = max;
+        if (mode === 'normal') {
+            const bulletMin = currentMinValue;
+            const bulletMax = max;
 
-        value = Math.max(bulletMin, value);
-        value = Math.min(bulletMax, value);        
+            value = Math.max(bulletMin, value);
+            value = Math.min(bulletMax, value);
+        } else {
+            value = getClosestValue(value);
+        }
         
         if (!maxBulletRef.current) return;
         calculateBulletPosition(maxBulletRef, value);
