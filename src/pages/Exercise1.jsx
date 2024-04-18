@@ -14,7 +14,7 @@ function Exercise1() {
             </div>
             <div>
                 <Range 
-                    // mode={'normal'}
+                    mode={'normal'}
                     min={0}
                     max={10.00}
                     onChange={onChange}
@@ -23,20 +23,20 @@ function Exercise1() {
             <hr />
             <div>
                 <Range 
-                    // mode={'normal'}
+                    mode={'normal'}
                     min={0}
                     max={100}
                     onChange={onChange}
                 />
             </div>
             <hr />
-            {/* <div>
+            <div>
                 <Range 
                     mode={'fixed'}
                     range={[1.99, 5.99, 10.99, 30.99, 50.99, 70.99]}
                     onChange={onChange}
                 />
-            </div> */}
+            </div>
         </>
     );
 }
