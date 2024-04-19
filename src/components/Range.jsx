@@ -3,20 +3,19 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import './Range.styles.scss';
 import RangeSlider from './RangeSlider';
 
+const defaulRange = [];
+
 function Range({
     mode,
-    range = [],
+    range = defaulRange,
 	min: minProp = 0,
 	max: maxProp = 0,
     step = 0.10,
 	onChange,
 	width,
 }) {
-    // const rangedValues = useMemo(() => [...range], [range]);
     const [min, setMin] = useState(minProp);
     const [max, setMax] = useState(maxProp);
-    // const [range, setRange] = useState(rangeProp);
-    // const [mode, setMode] = useState(modeProp);
 
     const sliderRef = useRef(null);
     const [sliderWith, setSliderWidth] = useState(null);
@@ -75,9 +74,6 @@ function Range({
     };
 
     const onMinChange = (value) => {
-        console.log('onMinChange', value);
-        console.log('minBulletRef',minBulletRef);
-
         if (mode === 'normal') {
             const bulletMin = min;
             const bulletMax = currentMaxValue;
@@ -89,8 +85,6 @@ function Range({
         }
 
         if (!minBulletRef.current) return;
-
-        console.log('value', value);
 
         calculateBulletPosition(minBulletRef, value);
         setCurrentMinValue(value);
@@ -130,17 +124,6 @@ function Range({
         calculateBulletPosition(minBulletRef, currentMinValue);
         calculateBulletPosition(maxBulletRef, currentMaxValue);
     }, [calculateBulletPosition, currentMinValue, currentMaxValue]);
-
-    useLayoutEffect(() => {
-        window.addEventListener("resize", redrawBullets);
-        return () => {
-			window.removeEventListener("resize", redrawBullets);
-		};
-    }, [redrawBullets]);
-
-    useEffect(() => {
-        redrawBullets();
-    }, [sliderWith, redrawBullets]);
 
     const getBulletStateByElement = (element) => {
         switch (element) {
@@ -207,6 +190,17 @@ function Range({
     };
     
     useEffect(() => {
+        window.addEventListener("resize", redrawBullets);
+        return () => {
+			window.removeEventListener("resize", redrawBullets);
+		};
+    }, [redrawBullets]);
+
+    useEffect(() => {
+        redrawBullets();
+    }, [sliderWith, redrawBullets]);
+
+    useEffect(() => {
 		if (isDragging) {
 			window.addEventListener("mousemove", onMouseMove);
 			window.addEventListener("mouseup", onMouseUp);
@@ -230,7 +224,7 @@ function Range({
                 onMouseDown={onMouseDown}
                 // onTouchStart={onTouchStart}
                 // onTouchStart={() => {}}
-                // onKeyDown={onKeyDown}
+                onKeyDown={onKeyDown}
                 sliderRef={sliderRef}
                 minBulletRef={minBulletRef}
                 maxBulletRef={maxBulletRef}

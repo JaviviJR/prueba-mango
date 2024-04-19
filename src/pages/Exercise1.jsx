@@ -31,13 +31,13 @@ function Exercise1() {
             <div>
             Exercise 1
             </div>
-            {/* { normalModeData &&  */}
-                {/* (<> */}
+            { normalModeData && 
+                (<> 
                     <div>
                         <Range 
                             mode={'normal'}
-                            min={0}
-                            max={10.00}
+                            min={normalModeData.min}
+                            max={normalModeData.max}
                             onChange={onChange}
                         />
                     </div>
@@ -50,8 +50,8 @@ function Exercise1() {
                             onChange={onChange}
                         />
                     </div>
-                {/* </>) */}
-            {/* } */}
+                </>)
+            }
             <hr />
             { fixedModeData && 
                 (<>
