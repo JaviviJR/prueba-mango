@@ -1,7 +1,26 @@
 
+import { useEffect, useState } from "react";
 import Range from "../components/Range";
 
 function Exercise1() {
+    const [normalModeData, setNormalModeData] = useState(null);
+    const [fixedModeData, setFixedModeData] = useState(null);
+
+    useEffect(() => {
+        fetch('http://localhost:9005/exercise1')
+            .then(response => response.json())
+            .then(data => {
+                setNormalModeData(data);
+            });
+    }, []);
+
+    useEffect(() => {
+        fetch('http://localhost:9005/exercise2')
+            .then(response => response.json())
+            .then(data => {
+                setFixedModeData(data['range']);
+            });
+    }, []);
     
     const onChange = (value) => {
         console.log(value);
@@ -12,31 +31,39 @@ function Exercise1() {
             <div>
             Exercise 1
             </div>
-            <div>
-                <Range 
-                    mode={'normal'}
-                    min={0}
-                    max={10.00}
-                    onChange={onChange}
-                />
-            </div>
+            { normalModeData && 
+                (<> 
+                    <div>
+                        <Range 
+                            mode={'normal'}
+                            min={normalModeData.min}
+                            max={normalModeData.max}
+                            onChange={onChange}
+                        />
+                    </div>
+                    <hr />
+                    <div>
+                        <Range 
+                            mode={'normal'}
+                            min={0}
+                            max={100}
+                            onChange={onChange}
+                        />
+                    </div>
+                </>)
+            }
             <hr />
-            <div>
-                <Range 
-                    mode={'normal'}
-                    min={0}
-                    max={100}
-                    onChange={onChange}
-                />
-            </div>
-            <hr />
-            <div>
-                <Range 
-                    mode={'fixed'}
-                    range={[1.99, 5.99, 10.99, 30.99, 50.99, 70.99]}
-                    onChange={onChange}
-                />
-            </div>
+            { fixedModeData && 
+                (<>
+                    <div>
+                        <Range 
+                            mode={'fixed'}
+                            range={fixedModeData}
+                            onChange={onChange}
+                        />
+                    </div>
+                </>)
+            }
         </>
     );
 }

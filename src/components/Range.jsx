@@ -3,19 +3,19 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import './Range.styles.scss';
 import RangeSlider from './RangeSlider';
 
+const defaulRange = [];
+
 function Range({
     mode,
-    range = [],
+    range = defaulRange,
 	min: minProp = 0,
 	max: maxProp = 0,
+    step = 0.10,
 	onChange,
 	width,
 }) {
-    // const rangedValues = useMemo(() => [...range], [range]);
     const [min, setMin] = useState(minProp);
     const [max, setMax] = useState(maxProp);
-    // const [range, setRange] = useState(rangeProp);
-    // const [mode, setMode] = useState(modeProp);
 
     const sliderRef = useRef(null);
     const [sliderWith, setSliderWidth] = useState(null);
@@ -31,7 +31,7 @@ function Range({
     const elementDragging = useRef(null);
     
     useLayoutEffect(() => {
-        console.log('useEffect watching props', [mode, range, minProp, maxProp]);
+        // console.log('useEffect watching props', [mode, range, minProp, maxProp]);
         switch (mode) {
             case 'fixed':
                 setMin(Math.min(...range));
@@ -83,7 +83,9 @@ function Range({
         } else {
             value = getClosestValue(value);
         }
+
         if (!minBulletRef.current) return;
+
         calculateBulletPosition(minBulletRef, value);
         setCurrentMinValue(value);
     };
@@ -122,17 +124,6 @@ function Range({
         calculateBulletPosition(minBulletRef, currentMinValue);
         calculateBulletPosition(maxBulletRef, currentMaxValue);
     }, [calculateBulletPosition, currentMinValue, currentMaxValue]);
-
-    useLayoutEffect(() => {
-        window.addEventListener("resize", redrawBullets);
-        return () => {
-			window.removeEventListener("resize", redrawBullets);
-		};
-    }, [redrawBullets]);
-
-    useEffect(() => {
-        redrawBullets();
-    }, [sliderWith, redrawBullets]);
 
     const getBulletStateByElement = (element) => {
         switch (element) {
@@ -182,6 +173,33 @@ function Range({
         elementDragging.current = bulletRef.current;
 	};
 
+    const onKeyDown = (event) => {
+        if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+            console.log('element', getBulletStateByElement(event.target));
+            
+            const { value, setMethod } = getBulletStateByElement(event.target);
+            let selectedValue = value;
+            if (event.key === "ArrowLeft") {
+				selectedValue = value - step;
+			} else if (event.key === "ArrowRight") {
+				selectedValue = value + step;
+			}
+            console.log('selectedValue', selectedValue);
+            setMethod(selectedValue);
+        }
+    };
+    
+    useEffect(() => {
+        window.addEventListener("resize", redrawBullets);
+        return () => {
+			window.removeEventListener("resize", redrawBullets);
+		};
+    }, [redrawBullets]);
+
+    useEffect(() => {
+        redrawBullets();
+    }, [sliderWith, redrawBullets]);
+
     useEffect(() => {
 		if (isDragging) {
 			window.addEventListener("mousemove", onMouseMove);
@@ -206,8 +224,7 @@ function Range({
                 onMouseDown={onMouseDown}
                 // onTouchStart={onTouchStart}
                 // onTouchStart={() => {}}
-                // onKeyDown={onKeyDown}
-                // onKeyDown={() => {}}
+                onKeyDown={onKeyDown}
                 sliderRef={sliderRef}
                 minBulletRef={minBulletRef}
                 maxBulletRef={maxBulletRef}
@@ -264,5 +281,6 @@ Range.propTypes = {
         }
     },
     onChange: PropTypes.func.isRequired,
+    step: PropTypes.number,
     width: PropTypes.number,
 };

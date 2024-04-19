@@ -36,28 +36,24 @@ function RangeSlider({
         <div
           ref={sliderRef}
           role="slider"
-          tabIndex={0}
-          // aria-valuemin={min}
-          // aria-valuemax={max}
-          // aria-valuenow={currentValue}
-          // onMouseDown={onMouseDown}
           // onTouchStart={onTouchStart}
-          // onKeyDown={onKeyDown}
           className="range-slider"
         >
           <div className="range-slider__bar">
-            <span
+            <button
               ref={minBulletRef}
               className="range-slider__handle min"
               onMouseDown={onMouseDown}
+              onKeyDown={onKeyDown}
               style={{ 
                 cursor: elementDragging.current === minBulletRef.current ? 'grabbing' : 'grab'
               }}
             />
-            <span
+            <button
               ref={maxBulletRef}
               className="range-slider__handle max"
               onMouseDown={onMouseDown}
+              onKeyDown={onKeyDown}
               style={{ 
                 cursor: elementDragging.current === maxBulletRef.currentgging ? 'grabbing' : 'grab'
               }}
@@ -87,7 +83,7 @@ RangeSlider.propTypes = {
     elementDragging: PropTypes.object.isRequired,
     onMouseDown: PropTypes.func.isRequired,
     // onTouchStart: PropTypes.func.isRequired,
-    // onKeyDown: PropTypes.func.isRequired,
+    onKeyDown: PropTypes.func.isRequired,
     sliderRef: PropTypes.object.isRequired,
     minBulletRef: PropTypes.object.isRequired,
     maxBulletRef: PropTypes.object.isRequired,
