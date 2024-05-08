@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import Range from "../components/Range";
 
-function Exercise1() {
-    const [normalModeData, setNormalModeData] = useState(null);
+function Exercise2() {
+    const [fixedModeData, setFixedModeData] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:9005/exercise1')
+        fetch('http://localhost:9005/exercise2')
             .then(response => response.json())
             .then(data => {
-                setNormalModeData(data);
+                setFixedModeData(data['range']);
             });
     }, []);
-    
+
     const onChange = (value) => {
         console.log(value);
     }
@@ -19,23 +19,21 @@ function Exercise1() {
     return (
         <>
             <div>
-                Exercise 1
+                Exercise 2
             </div>
-            { normalModeData && 
-                (<> 
+            { fixedModeData && 
+                (<>
                     <div>
                         <Range 
-                            mode={'normal'}
-                            min={normalModeData.min}
-                            max={normalModeData.max}
+                            mode={'fixed'}
+                            range={fixedModeData}
                             onChange={onChange}
                         />
                     </div>
                 </>)
             }
-            
         </>
     );
 }
 
-export default Exercise1;
+export default Exercise2;

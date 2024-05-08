@@ -63,6 +63,7 @@ function Range({
     /* END DEBUG */
 
     const calculateBulletPosition = useCallback((bulletRef, value) => {
+        // console.log('calculateBulletPosition - sliderWith', sliderWith);
         const position = ((value - min) / (max - min)) * sliderWith;
         bulletRef.current.style.left = `${position + (-1 * 20 / 2)}px`;
     }, [min, max, sliderWith]);
@@ -85,8 +86,8 @@ function Range({
         }
 
         if (!minBulletRef.current) return;
-
-        calculateBulletPosition(minBulletRef, value);
+        
+        // calculateBulletPosition(minBulletRef, value);
         setCurrentMinValue(value);
     };
 
@@ -102,7 +103,8 @@ function Range({
         }
         
         if (!maxBulletRef.current) return;
-        calculateBulletPosition(maxBulletRef, value);
+        
+        // calculateBulletPosition(maxBulletRef, value);
         setCurrentMaxValue(value);
     };
 
@@ -116,6 +118,7 @@ function Range({
     
     const redrawBullets = useCallback(() => {
         const sliderBoundingClientRect = sliderRef.current?.getBoundingClientRect();
+        console.log('redrawBullets - sliderBoundingClientRect', sliderBoundingClientRect);
         if (!sliderBoundingClientRect) return;
 
         setSliderWidth(sliderBoundingClientRect.width);
@@ -175,8 +178,6 @@ function Range({
 
     const onKeyDown = (event) => {
         if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-            console.log('element', getBulletStateByElement(event.target));
-            
             const { value, setMethod } = getBulletStateByElement(event.target);
             let selectedValue = value;
             if (event.key === "ArrowLeft") {
@@ -222,8 +223,6 @@ function Range({
                 onMaxChange={onMaxChange}
                 elementDragging={elementDragging}
                 onMouseDown={onMouseDown}
-                // onTouchStart={onTouchStart}
-                // onTouchStart={() => {}}
                 onKeyDown={onKeyDown}
                 sliderRef={sliderRef}
                 minBulletRef={minBulletRef}
