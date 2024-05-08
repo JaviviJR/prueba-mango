@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+import { useEffect, useState } from 'react';
 
 function RangeSlider({
     width,
@@ -8,41 +9,65 @@ function RangeSlider({
     onMaxChange,
     elementDragging,
     onMouseDown,
-    onTouchStart,
     onKeyDown,
     sliderRef,
     minBulletRef,
     maxBulletRef
   }) {
-    
-    const minValueAsString = currentMinValue.toFixed(2);
-    const maxValueAsString = currentMaxValue.toFixed(2);
+    const [minInput, setMinInput] = useState(currentMinValue.toFixed(2));
+    const [maxInput, setMaxInput] = useState(currentMaxValue.toFixed(2));
+
+    useEffect(() => {
+      const timeout = setTimeout(() => {
+        onMinChange(Number(minInput));
+      }, 500);                            
+      return () => clearTimeout(timeout);
+    }, [minInput]);
+
+    useEffect(() => {
+      setMinInput(currentMinValue.toFixed(2));
+    }, [currentMinValue]);
+
+    useEffect(() => {
+      const timeout = setTimeout(() => {
+        onMaxChange(Number(maxInput));
+      }, 500);
+      return () => clearTimeout(timeout);
+    }, [maxInput]);
+
+    useEffect(() => {
+      setMaxInput(currentMaxValue.toFixed(2));
+    }, [currentMaxValue]);
 
     return (
       <div 
         className='range-slider-container'
+        data-testid='slider'
         style={{
           width: width ? `${width}px` : '100%'
         }}
       >
         <div className='range-slider-container__input-div'>
           <input 
+            data-testid='min-value-input'
             type='number'
             className='range-slider-container__input'
-            value={minValueAsString}
-            onChange={(e) => {onMinChange(Number(e.target.value))}}
+            // value={minValueAsString}
+            value={minInput}
+            // onChange={(e) => {onMinChange(Number(e.target.value))}}
+            onChange={(e) => setMinInput(e.target.value)}
           />€
         </div>
         <div
           ref={sliderRef}
           role="slider"
-          // onTouchStart={onTouchStart}
           className="range-slider"
         >
           <div className="range-slider__bar">
             <button
               ref={minBulletRef}
-              className="range-slider__handle min"
+              data-testid='min-value-bullet'
+              className="range-slider__handle"
               onMouseDown={onMouseDown}
               onKeyDown={onKeyDown}
               style={{ 
@@ -51,7 +76,8 @@ function RangeSlider({
             />
             <button
               ref={maxBulletRef}
-              className="range-slider__handle max"
+              data-testid='max-value-bullet'
+              className="range-slider__handle"
               onMouseDown={onMouseDown}
               onKeyDown={onKeyDown}
               style={{ 
@@ -62,10 +88,13 @@ function RangeSlider({
         </div>
         <div className='range-slider-container__input-div'>
           <input 
+            data-testid='max-value-input'
             type='number'
             className='range-slider-container__input'
-            value={maxValueAsString}
-            onChange={(e) => {onMaxChange(Number(e.target.value))}}
+            // value={maxValueAsString}
+            value={maxInput}
+            // onChange={(e) => {onMaxChange(Number(e.target.value))}}
+            onChange={(e) => setMaxInput(e.target.value)}
           />€
         </div>
       </div>

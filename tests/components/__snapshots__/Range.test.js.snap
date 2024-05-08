@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`testinv <Range> compontent should math with snapshot 1`] = `
+<div>
+  <div>
+    <div
+      class="range-slider-container"
+      data-testid="slider"
+      style="width: 100%;"
+    >
+      <div
+        class="range-slider-container__input-div"
+      >
+        <input
+          class="range-slider-container__input"
+          data-testid="min-value-input"
+          type="number"
+          value="0.00"
+        />
+        €
+      </div>
+      <div
+        class="range-slider"
+        role="slider"
+      >
+        <div
+          class="range-slider__bar"
+        >
+          <button
+            class="range-slider__handle"
+            data-testid="min-value-bullet"
+            style="cursor: grab; left: -10px;"
+          />
+          <button
+            class="range-slider__handle"
+            data-testid="max-value-bullet"
+            style="cursor: grab; left: -10px;"
+          />
+        </div>
+      </div>
+      <div
+        class="range-slider-container__input-div"
+      >
+        <input
+          class="range-slider-container__input"
+          data-testid="max-value-input"
+          type="number"
+          value="100.00"
+        />
+        €
+      </div>
+    </div>
+  </div>
+</div>
+`;
